@@ -83,7 +83,7 @@ export default function RoleSidebar({
       )}
 
       <aside
-        className={`w-64 lg:w-60 h-screen flex flex-col py-7 px-5 shrink-0 fixed lg:relative z-50 lg:z-0 top-0 left-0 transition-transform duration-300 ease-in-out ${
+        className={`w-64 lg:w-60 h-screen flex flex-col py-7 px-5 shrink-0 fixed lg:sticky z-50 lg:z-0 top-0 left-0 transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       style={{
