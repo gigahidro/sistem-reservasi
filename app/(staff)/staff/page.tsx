@@ -9,7 +9,8 @@ export default async function StaffOverviewPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
-  const today = new Date().toISOString().split("T")[0];
+  const d = new Date();
+  const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
   const [{ data: todayRes }, { data: pendingPayment }, { data: allToday }] = await Promise.all([
     supabase.from("reservasi").select("*, meja(*, outlets(*))")
@@ -36,7 +37,7 @@ export default async function StaffOverviewPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {stats.map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-3">

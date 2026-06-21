@@ -21,7 +21,8 @@ const MEJA_LAYOUT_ORDER = [
 
 export default function StaffDenahClient({ outlets }: StaffDenahClientProps) {
   const supabase = createClient();
-  const today = new Date().toISOString().split("T")[0];
+  const d = new Date();
+  const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
   const [selectedOutlet, setSelectedOutlet] = useState<Outlet | null>(outlets[0] || null);
   const [selectedSesi, setSelectedSesi] = useState(SESI_OPTIONS[0]);
@@ -125,13 +126,14 @@ export default function StaffDenahClient({ outlets }: StaffDenahClientProps) {
       </div>
 
       {/* Grid */}
-      <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 min-h-[420px] relative">
+      <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 min-h-[420px] relative overflow-x-auto">
         {loading ? (
           <div className="flex items-center justify-center h-64">
             <div className="w-10 h-10 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-x-16 gap-y-10 max-w-lg mx-auto">
+          <div className="w-max mx-auto relative py-4">
+            <div className="grid grid-cols-2 gap-x-16 gap-y-10">
             {sortedMeja.map((meja) => {
               const res = reservasiList.find(r => r.meja_id === meja.id);
               const isAvailable = meja.is_available;
@@ -169,6 +171,7 @@ export default function StaffDenahClient({ outlets }: StaffDenahClientProps) {
                 </div>
               );
             })}
+            </div>
           </div>
         )}
       </div>

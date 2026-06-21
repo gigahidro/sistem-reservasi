@@ -92,8 +92,8 @@ export default function StaffReservasiPage() {
               const userR = r.users as Record<string, unknown>;
               const badge = STATUS_BADGE[r.status as string] || STATUS_BADGE.Mendatang;
               return (
-                <div key={r.id as string} className="px-6 py-4 flex items-center gap-4">
-                  <div className="flex-1 min-w-0">
+                <div key={r.id as string} className="px-6 py-4 flex flex-col md:flex-row md:items-center gap-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex-1 min-w-0 w-full">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
                       <p className="font-semibold text-sm" style={{ color: "#1e0d3a" }}>
                         {String(meja?.nomor || "—")} — {String(outlet?.nama_outlet || "—")}
@@ -131,7 +131,7 @@ export default function StaffReservasiPage() {
 
                   {/* Actions */}
                   {r.status === "Menunggu Konfirmasi" && (
-                    <div className="flex gap-2 shrink-0">
+                    <div className="flex gap-2 shrink-0 self-start md:self-auto w-full md:w-auto mt-2 md:mt-0">
                       <button onClick={() => updateStatus(r.id as string, "Mendatang")}
                         disabled={updating === r.id}
                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-100 text-green-700 hover:bg-green-200 transition-colors disabled:opacity-50">

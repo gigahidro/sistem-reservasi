@@ -27,7 +27,8 @@ const MEJA_LAYOUT_ORDER = [
 export default function DenahClient({ userId, outlets }: DenahClientProps) {
   const supabase = createClient();
 
-  const today = new Date().toISOString().split("T")[0];
+  const d = new Date();
+  const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
   const [selectedOutlet, setSelectedOutlet] = useState<Outlet | null>(
     outlets[0] || null
@@ -177,13 +178,14 @@ export default function DenahClient({ userId, outlets }: DenahClientProps) {
       </div>
 
       {/* Denah Floor Plan */}
-      <div className="denah-floor rounded-3xl p-8 shadow-inner min-h-[420px] relative">
+      <div className="denah-floor rounded-3xl p-8 shadow-inner min-h-[420px] overflow-x-auto">
         {loadingMeja ? (
           <div className="flex items-center justify-center h-64">
             <div className="w-10 h-10 border-4 border-purple-300 border-t-purple-700 rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-x-16 gap-y-10 max-w-lg">
+          <div className="w-max min-w-[550px] mx-auto flex items-center justify-center gap-16 py-4">
+            <div className="grid grid-cols-2 gap-x-16 gap-y-10">
             {sortedMeja.map((meja) => (
               <MejaCard
                 key={meja.id}
@@ -192,22 +194,13 @@ export default function DenahClient({ userId, outlets }: DenahClientProps) {
                 onClick={() => setSelectedMeja(meja)}
               />
             ))}
+            </div>
 
-            {/* Kasir box — absolutely positioned right */}
+            {/* Kasir box */}
             <div
-              className="absolute right-8 top-1/2 -translate-y-1/2"
-              style={{
-                width: "110px",
-                height: "90px",
-                border: "2px solid #d97706",
-                borderRadius: "12px",
-                background: "white",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
+              className="flex-shrink-0 flex items-center justify-center bg-white border-2 border-amber-600 rounded-xl w-28 h-24 shadow-sm"
             >
-              <span className="text-gold-600 font-bold text-lg">Kasir</span>
+              <span className="text-amber-600 font-bold text-lg">Kasir</span>
             </div>
           </div>
         )}

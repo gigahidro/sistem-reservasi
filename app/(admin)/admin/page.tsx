@@ -53,7 +53,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {stats.map(({ label, value, icon: Icon, color, bg }) => (
           <div key={label} className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-3">

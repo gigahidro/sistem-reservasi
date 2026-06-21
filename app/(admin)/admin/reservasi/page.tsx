@@ -100,8 +100,8 @@ export default function AdminReservasiPage() {
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="px-6 py-3 border-b border-gray-100 grid grid-cols-12 text-xs font-bold text-gray-400 uppercase tracking-wider">
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-x-auto">
+        <div className="px-6 py-3 border-b border-gray-100 grid grid-cols-12 min-w-[800px] text-xs font-bold text-gray-400 uppercase tracking-wider">
           <span className="col-span-3">Meja / Outlet</span>
           <span className="col-span-3">Pelanggan</span>
           <span className="col-span-2">Tanggal</span>
@@ -120,7 +120,7 @@ export default function AdminReservasiPage() {
               const userR = r.users as Record<string, unknown>;
               const badge = STATUS_BADGE[r.status as string] || STATUS_BADGE.Mendatang;
               return (
-                <div key={r.id as string} className="px-6 py-3.5 grid grid-cols-12 items-center gap-2">
+                <div key={r.id as string} className="px-6 py-3.5 grid grid-cols-12 min-w-[800px] items-center gap-2 hover:bg-gray-50 transition-colors">
                   <div className="col-span-3">
                     <p className="font-semibold text-sm" style={{ color: "#1e0d3a" }}>{String(meja?.nomor || "—")}</p>
                     <p className="text-xs text-gray-400">{String(outlet?.nama_outlet || "—")}</p>

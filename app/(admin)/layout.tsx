@@ -19,7 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex min-h-screen" style={{ background: "#f8f5f2" }}>
+    <div className="flex flex-col lg:flex-row min-h-screen" style={{ background: "#f8f5f2" }}>
       <RoleSidebar
         user={profile as User}
         role="admin"

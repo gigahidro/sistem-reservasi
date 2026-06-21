@@ -28,7 +28,7 @@ export default async function DashboardLayout({
   if (profile?.role === "Admin") redirect("/admin");
 
   return (
-    <div className="flex min-h-screen" style={{ background: "#f8f5f2" }}>
+    <div className="flex flex-col lg:flex-row min-h-screen" style={{ background: "#f8f5f2" }}>
       <Sidebar user={profile as User | null} />
       <main className="flex-1 overflow-auto">{children}</main>
     </div>

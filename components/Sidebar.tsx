@@ -1,9 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
-import { LayoutGrid, History, LogOut, Bell } from "lucide-react";
+import { LayoutGrid, History, LogOut, Bell, Menu, X } from "lucide-react";
 import type { User } from "@/lib/types";
 
 interface SidebarProps {
@@ -20,6 +21,7 @@ export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const [isOpen, setIsOpen] = useState(false);
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -32,8 +34,33 @@ export default function Sidebar({ user }: SidebarProps) {
   }
 
   return (
-    <aside
-      className="w-60 min-h-screen flex flex-col py-7 px-5 shrink-0 relative"
+    <>
+      {/* Mobile Header */}
+      <div className="lg:hidden flex items-center justify-between px-5 py-4 shrink-0 shadow-sm relative z-20"
+        style={{ background: "linear-gradient(90deg, #3d1a6e 0%, #1e0d3a 100%)" }}>
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 border border-white/20">
+            <svg width="20" height="20" viewBox="0 0 56 56" fill="none">
+              <ellipse cx="28" cy="22" rx="13" ry="9" fill="white" />
+              <rect x="19" y="27" width="18" height="5" rx="2" fill="white" />
+            </svg>
+          </div>
+          <span className="text-white font-extrabold tracking-widest text-sm">YUMFOOD</span>
+        </div>
+        <button onClick={() => setIsOpen(!isOpen)} className="text-white hover:text-amber-400 transition-colors">
+          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+      </div>
+
+      {/* Overlay */}
+      {isOpen && (
+        <div className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm" onClick={() => setIsOpen(false)} />
+      )}
+
+      <aside
+        className={`w-64 lg:w-60 h-screen flex flex-col py-7 px-5 shrink-0 fixed lg:relative z-50 lg:z-0 top-0 left-0 transition-transform duration-300 ease-in-out ${
+          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
       style={{
         background: "linear-gradient(180deg, #3d1a6e 0%, #2d1152 65%, #1e0d3a 100%)",
         borderRight: "1px solid rgba(245,158,11,0.15)",
@@ -149,5 +176,6 @@ export default function Sidebar({ user }: SidebarProps) {
         </button>
       </div>
     </aside>
+    </>
   );
 }
