@@ -1,5 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+Untuk Masuk Admin dan Staff
+1. Admin: giga, pswd: admin123
+22tStaff: hidro pswd: staff123
+
 ## Getting Started
 
 First, run the development server:
