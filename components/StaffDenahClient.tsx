@@ -19,14 +19,39 @@ const MEJA_LAYOUT_ORDER = [
   "Meja 4",
 ];
 
+function isSessionPassed(sesiString: string, selectedDate: string) {
+  const match = sesiString.match(/\((.*?)\s*-/);
+  if (!match) return false;
+  
+  const startTimeStr = match[1]; // e.g. "12:00"
+  const now = new Date();
+  
+  // Format today's date in YYYY-MM-DD local time
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  
+  if (selectedDate > today) return false;
+  if (selectedDate < today) return true;
+  
+  const [hours, minutes] = startTimeStr.split(':').map(Number);
+  const currentHours = now.getHours();
+  const currentMinutes = now.getMinutes();
+  
+  return currentHours > hours || (currentHours === hours && currentMinutes >= minutes);
+}
+
+function getInitialSesi(dateStr: string) {
+  const valid = SESI_OPTIONS.find((s) => !isSessionPassed(s, dateStr));
+  return valid || SESI_OPTIONS[SESI_OPTIONS.length - 1];
+}
+
 export default function StaffDenahClient({ outlets }: StaffDenahClientProps) {
   const supabase = createClient();
   const d = new Date();
   const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 
   const [selectedOutlet, setSelectedOutlet] = useState<Outlet | null>(outlets[0] || null);
-  const [selectedSesi, setSelectedSesi] = useState(SESI_OPTIONS[0]);
   const [selectedTanggal, setSelectedTanggal] = useState(today);
+  const [selectedSesi, setSelectedSesi] = useState(() => getInitialSesi(today));
   const [mejaList, setMejaList] = useState<(Meja & { outlets: Outlet })[]>([]);
   const [reservasiList, setReservasiList] = useState<Record<string, any>[]>([]);
   const [loading, setLoading] = useState(false);
@@ -54,7 +79,14 @@ export default function StaffDenahClient({ outlets }: StaffDenahClientProps) {
     setMejaList((meja as (Meja & { outlets: Outlet })[]) || []);
     setReservasiList(filteredReservasi || []);
     setLoading(false);
-  }, [selectedOutlet, selectedSesi, selectedTanggal, supabase]);
+  }, [selectedOutlet, selectedTanggal, selectedSesi, supabase]);
+
+  useEffect(() => {
+    // If selectedSesi becomes invalid because of date change, update it
+    if (isSessionPassed(selectedSesi, selectedTanggal)) {
+      setSelectedSesi(getInitialSesi(selectedTanggal));
+    }
+  }, [selectedTanggal, selectedSesi]);
 
   useEffect(() => {
     fetchData();
@@ -97,16 +129,25 @@ export default function StaffDenahClient({ outlets }: StaffDenahClientProps) {
           />
         </div>
         <div className="flex-1 min-w-48">
-          <label className="flex items-center gap-1.5 text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">
-            <Clock className="w-3.5 h-3.5" /> Sesi
-          </label>
-          <select
-            value={selectedSesi}
-            onChange={(e) => setSelectedSesi(e.target.value)}
-            className="w-full px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:border-purple-400"
-          >
-            {SESI_OPTIONS.map((s) => <option key={s} value={s}>{s}</option>)}
-          </select>
+          <div>
+            <label className="flex items-center gap-1.5 text-purple-700 text-xs font-bold uppercase tracking-wider mb-2">
+              <Clock className="w-3.5 h-3.5" /> Pilih Sesi
+            </label>
+            <select
+              value={selectedSesi}
+              onChange={(e) => setSelectedSesi(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl border border-purple-200 bg-white text-purple-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
+            >
+              {SESI_OPTIONS.map((s) => {
+                const passed = isSessionPassed(s, selectedTanggal);
+                return (
+                  <option key={s} value={s} disabled={passed}>
+                    {s} {passed ? "(Terlewat)" : ""}
+                  </option>
+                );
+              })}
+            </select>
+          </div>
         </div>
       </div>
 

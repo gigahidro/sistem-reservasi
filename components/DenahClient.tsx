@@ -24,6 +24,31 @@ const MEJA_LAYOUT_ORDER = [
   "Meja 4",
 ];
 
+function isSessionPassed(sesiString: string, selectedDate: string) {
+  const match = sesiString.match(/\((.*?)\s*-/);
+  if (!match) return false;
+  
+  const startTimeStr = match[1]; // e.g. "12:00"
+  const now = new Date();
+  
+  // Format today's date in YYYY-MM-DD local time
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  
+  if (selectedDate > today) return false;
+  if (selectedDate < today) return true;
+  
+  const [hours, minutes] = startTimeStr.split(':').map(Number);
+  const currentHours = now.getHours();
+  const currentMinutes = now.getMinutes();
+  
+  return currentHours > hours || (currentHours === hours && currentMinutes >= minutes);
+}
+
+function getInitialSesi(dateStr: string) {
+  const valid = SESI_OPTIONS.find((s) => !isSessionPassed(s, dateStr));
+  return valid || SESI_OPTIONS[SESI_OPTIONS.length - 1];
+}
+
 export default function DenahClient({ userId, outlets }: DenahClientProps) {
   const supabase = createClient();
 
@@ -33,8 +58,8 @@ export default function DenahClient({ userId, outlets }: DenahClientProps) {
   const [selectedOutlet, setSelectedOutlet] = useState<Outlet | null>(
     outlets[0] || null
   );
-  const [selectedSesi, setSelectedSesi] = useState(SESI_OPTIONS[0]);
   const [selectedTanggal, setSelectedTanggal] = useState(today);
+  const [selectedSesi, setSelectedSesi] = useState(() => getInitialSesi(today));
   const [mejaList, setMejaList] = useState<(Meja & { outlets: Outlet })[]>([]);
   const [reservasiList, setReservasiList] = useState<Reservasi[]>([]);
   const [selectedMeja, setSelectedMeja] = useState<
@@ -71,6 +96,13 @@ export default function DenahClient({ userId, outlets }: DenahClientProps) {
     setReservasiList(filteredReservasi as Reservasi[]);
     setLoadingMeja(false);
   }, [selectedOutlet, selectedSesi, selectedTanggal, supabase]);
+
+  useEffect(() => {
+    // If selectedSesi becomes invalid because of date change, update it
+    if (isSessionPassed(selectedSesi, selectedTanggal)) {
+      setSelectedSesi(getInitialSesi(selectedTanggal));
+    }
+  }, [selectedTanggal, selectedSesi]);
 
   useEffect(() => {
     fetchMejaAndReservasi();
@@ -131,11 +163,14 @@ export default function DenahClient({ userId, outlets }: DenahClientProps) {
               onChange={(e) => setSelectedSesi(e.target.value)}
               className="w-full px-3 py-2.5 rounded-xl border border-purple-200 bg-white text-purple-900 text-sm focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100"
             >
-              {SESI_OPTIONS.map((s) => (
-                <option key={s} value={s}>
-                  {s}
-                </option>
-              ))}
+              {SESI_OPTIONS.map((s) => {
+                const passed = isSessionPassed(s, selectedTanggal);
+                return (
+                  <option key={s} value={s} disabled={passed}>
+                    {s} {passed ? "(Terlewat)" : ""}
+                  </option>
+                );
+              })}
             </select>
           </div>
 
