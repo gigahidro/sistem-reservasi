@@ -2,7 +2,8 @@
 
 import { createClient } from "@/lib/supabase/client";
 import type { Reservasi, ReservasiStatus } from "@/lib/types";
-import { CalendarDays, Clock, Users, X, CheckCircle, Clock3, Loader } from "lucide-react";
+import Link from "next/link";
+import { CalendarDays, Clock, Users, X, CheckCircle, Clock3, Loader, Ticket } from "lucide-react";
 import { useState } from "react";
 
 interface RiwayatCardProps {
@@ -139,6 +140,16 @@ export default function RiwayatCard({ reservasi, onUpdate }: RiwayatCardProps) {
               <span className="block text-[10px] mt-0.5 font-normal opacity-80">(Menunggu Verifikasi Pembayaran)</span>
             )}
           </span>
+
+          {reservasi.status === "Mendatang" && (
+            <Link 
+              href={`/dashboard/tiket/${reservasi.id}`}
+              className="mt-1 px-3 py-1.5 bg-purple-600 text-white text-xs font-bold rounded-lg hover:bg-purple-700 transition-colors flex items-center gap-1.5"
+            >
+              <Ticket className="w-3.5 h-3.5" />
+              E-Ticket
+            </Link>
+          )}
 
           {(reservasi.status === "Mendatang" || reservasi.status === "Menunggu Konfirmasi") && (
             <button

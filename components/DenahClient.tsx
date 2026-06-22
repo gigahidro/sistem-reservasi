@@ -193,7 +193,7 @@ export default function DenahClient({ userId, outlets }: DenahClientProps) {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-6 mb-5 px-1">
+      <div className="flex items-center flex-wrap gap-4 md:gap-6 mb-5 px-1">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-purple-700 shadow" />
           <span className="text-purple-700 text-sm font-medium">Tersedia</span>
@@ -202,6 +202,12 @@ export default function DenahClient({ userId, outlets }: DenahClientProps) {
           <span className="w-3 h-3 rounded-full bg-red-600 shadow" />
           <span className="text-purple-700 text-sm font-medium">
             Tidak Tersedia (Full)
+          </span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full bg-gray-500 shadow" />
+          <span className="text-purple-700 text-sm font-medium">
+            Meja Ditutup
           </span>
         </div>
         <div className="flex items-center gap-2">
