@@ -74,7 +74,7 @@ export default function RegisterPage() {
       {/* Left — Food Flat-lay Photo */}
       <div className="relative hidden lg:block" style={{ width: "55%" }}>
         <Image
-          src="/register-hero.png"
+          src="/register-hero.webp"
           alt="PTIK YUMFOOD Food Spread"
           fill
           className="object-cover"

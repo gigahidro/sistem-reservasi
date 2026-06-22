@@ -65,7 +65,7 @@ export default function LoginPage() {
       {/* Left — Restaurant Photo */}
       <div className="relative hidden lg:block" style={{ width: "55%" }}>
         <Image
-          src="/login-hero.png"
+          src="/login-hero.webp"
           alt="PTIK YUMFOOD Restaurant Interior"
           fill
           className="object-cover"
