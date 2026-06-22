@@ -91,16 +91,21 @@ export default function StaffVerifikasiPage() {
             const meja = res?.meja as Record<string, unknown>;
             const outlet = (meja?.outlets as Record<string, unknown>);
             const userR = res?.users as Record<string, unknown>;
-            const isVerified = p.status === true;
+            const isProcessed = p.verified_at !== null;
+            const isApproved = isProcessed && p.status === true;
+            const isRejected = isProcessed && p.status === false;
+            const isPending = !isProcessed;
 
             return (
               <div key={p.id as string} className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
                 <div className="flex items-start gap-4">
                   {/* Status icon */}
-                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${isVerified ? "bg-green-100" : "bg-amber-100"}`}>
-                    {isVerified
+                  <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${isApproved ? "bg-green-100" : isRejected ? "bg-red-100" : "bg-amber-100"}`}>
+                    {isApproved
                       ? <CheckCircle className="w-5 h-5 text-green-600" />
-                      : <CreditCard className="w-5 h-5 text-amber-600" />}
+                      : isRejected
+                        ? <X className="w-5 h-5 text-red-600" />
+                        : <CreditCard className="w-5 h-5 text-amber-600" />}
                   </div>
 
                   <div className="flex-1 min-w-0">
@@ -108,8 +113,8 @@ export default function StaffVerifikasiPage() {
                       <p className="font-bold text-sm" style={{ color: "#1e0d3a" }}>
                         {String(meja?.nomor || "—")} — {String(outlet?.nama_outlet || "—")}
                       </p>
-                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${isVerified ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700"}`}>
-                        {isVerified ? "Terverifikasi" : "Menunggu Verifikasi"}
+                      <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${isApproved ? "bg-green-100 text-green-700" : isRejected ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
+                        {isApproved ? "Terverifikasi" : isRejected ? "Ditolak" : "Menunggu Verifikasi"}
                       </span>
                     </div>
                     <p className="text-xs text-gray-400 mb-0.5">
@@ -128,7 +133,7 @@ export default function StaffVerifikasiPage() {
                         <Eye className="w-3.5 h-3.5" /> Lihat Bukti
                       </button>
                     )}
-                    {!isVerified && (
+                    {isPending && (
                       <div className="flex gap-1.5">
                         <button onClick={() => verify(p.id as string, res.id as string, true)} disabled={updating === p.id}
                           className="flex items-center gap-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-green-100 text-green-700 hover:bg-green-200 transition-colors disabled:opacity-50">
