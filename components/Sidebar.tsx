@@ -36,7 +36,7 @@ export default function Sidebar({ user }: SidebarProps) {
   return (
     <>
       {/* Mobile Header */}
-      <div className="lg:hidden flex items-center justify-between px-5 py-4 shrink-0 shadow-sm relative z-20"
+      <div className="lg:hidden flex items-center justify-between px-5 py-4 shrink-0 shadow-sm sticky top-0 z-40"
         style={{ background: "linear-gradient(90deg, #3d1a6e 0%, #1e0d3a 100%)" }}>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full flex items-center justify-center bg-white/10 border border-white/20">

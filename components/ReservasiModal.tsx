@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { createClient } from "@/lib/supabase/client";
 import type { Meja, Outlet } from "@/lib/types";
 import { X, Users, CreditCard, Upload, CheckCircle, Loader } from "lucide-react";
@@ -23,6 +24,15 @@ export default function ReservasiModal({
   onSuccess,
 }: ReservasiModalProps) {
   const supabase = createClient();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, []);
   const [jumlahOrang, setJumlahOrang] = useState(1);
   const [jumlahDp, setJumlahDp] = useState("");
   const [bukti, setBukti] = useState<File | null>(null);
@@ -111,8 +121,10 @@ export default function ReservasiModal({
     }
   }
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+  if (!mounted) return null;
+
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 animate-fade-in">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-purple-950/70 backdrop-blur-sm"
@@ -275,6 +287,7 @@ export default function ReservasiModal({
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

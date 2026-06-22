@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { createClient } from "@/lib/supabase/client";
 import { CheckCircle, X, Clock3, CalendarDays, Users, Search, Filter, Eye, CreditCard } from "lucide-react";
 
@@ -12,6 +13,9 @@ export default function StaffReservasiPage() {
   const [filterStatus, setFilterStatus] = useState("Semua");
   const [updating, setUpdating] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const fetchReservasi = useCallback(async () => {
     setLoading(true);
@@ -152,8 +156,8 @@ export default function StaffReservasiPage() {
       </div>
 
       {/* Image preview modal */}
-      {previewUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+      {previewUrl && mounted && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
           onClick={() => setPreviewUrl(null)}>
           <div className="relative max-w-lg w-full bg-white rounded-2xl overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100">
@@ -163,9 +167,10 @@ export default function StaffReservasiPage() {
               </button>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={previewUrl} alt="Bukti pembayaran" className="w-full object-contain max-h-96" />
+            <img src={previewUrl} alt="Bukti Pembayaran" className="w-full h-auto max-h-[70vh] object-contain bg-gray-50" />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
