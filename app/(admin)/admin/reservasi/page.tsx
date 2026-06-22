@@ -17,17 +17,25 @@ export default function AdminReservasiPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState("Semua");
+  const d = new Date();
+  const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const [tanggal, setTanggal] = useState(todayStr);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase
+    let query = supabase
       .from("reservasi")
       .select("*, meja(*, outlets(*)), users!reservasi_user_id_fkey(nama, username, email)")
-      .order("tanggal", { ascending: false })
       .order("created_at", { ascending: false });
+
+    if (tanggal) {
+      query = query.eq("tanggal", tanggal);
+    }
+    
+    const { data } = await query;
     setReservasi(data || []);
     setLoading(false);
-  }, [supabase]);
+  }, [supabase, tanggal]);
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
@@ -92,10 +100,18 @@ export default function AdminReservasiPage() {
             {s}
           </button>
         ))}
-        <div className="relative ml-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Cari..."
-            className="pl-9 pr-4 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-purple-400 w-48" />
+        <div className="flex ml-auto gap-3 items-center">
+          <input 
+            type="date" 
+            value={tanggal} 
+            onChange={e => setTanggal(e.target.value)}
+            className="px-4 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-purple-400" 
+          />
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Cari..."
+              className="pl-9 pr-4 py-2 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-purple-400 w-48" />
+          </div>
         </div>
       </div>
 

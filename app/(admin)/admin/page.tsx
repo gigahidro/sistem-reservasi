@@ -1,16 +1,21 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Users, CalendarDays, CheckCircle, X, TrendingUp } from "lucide-react";
+import DashboardDateFilter from "./DashboardDateFilter";
 
 export const metadata = { title: "Admin — Dashboard | PTIK YUMFOOD" };
 
-export default async function AdminDashboardPage() {
+export default async function AdminDashboardPage(props: { searchParams?: Promise<{ date?: string }> | { date?: string } }) {
   const supabase = await createClient();
+  const searchParams = props.searchParams ? await props.searchParams : {};
+  const d = new Date();
+  const todayStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  const dateStr = searchParams.date || todayStr;
+
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
 
   const [
-    { count: totalUsers },
     { count: totalReservasi },
     { count: selesai },
     { count: dibatalkan },
@@ -18,22 +23,22 @@ export default async function AdminDashboardPage() {
     { data: recentRes },
     { data: dpData },
   ] = await Promise.all([
-    supabase.from("users").select("*", { count: "exact", head: true }),
-    supabase.from("reservasi").select("*", { count: "exact", head: true }),
-    supabase.from("reservasi").select("*", { count: "exact", head: true }).eq("status", "Selesai"),
-    supabase.from("reservasi").select("*", { count: "exact", head: true }).eq("status", "Dibatalkan"),
-    supabase.from("reservasi").select("*", { count: "exact", head: true }).eq("status", "Menunggu Konfirmasi"),
+    supabase.from("reservasi").select("*", { count: "exact", head: true }).eq("tanggal", dateStr),
+    supabase.from("reservasi").select("*", { count: "exact", head: true }).eq("status", "Selesai").eq("tanggal", dateStr),
+    supabase.from("reservasi").select("*", { count: "exact", head: true }).eq("status", "Dibatalkan").eq("tanggal", dateStr),
+    supabase.from("reservasi").select("*", { count: "exact", head: true }).eq("status", "Menunggu Konfirmasi").eq("tanggal", dateStr),
     supabase.from("reservasi").select("*, meja(*, outlets(*)), users!reservasi_user_id_fkey(nama, username)")
+      .eq("tanggal", dateStr)
       .order("created_at", { ascending: false }).limit(8),
-    supabase.from("pembayaran").select("jumlah_dp, status"),
+    supabase.from("pembayaran").select("jumlah_dp, status, reservasi!inner(tanggal)").eq("reservasi.tanggal", dateStr),
   ]);
 
   const totalDP = dpData?.filter(p => p.status).reduce((sum, p) => sum + Number(p.jumlah_dp), 0) ?? 0;
   const mendatang = (totalReservasi ?? 0) - (selesai ?? 0) - (dibatalkan ?? 0) - (menunggu ?? 0);
 
   const stats = [
-    { label: "Total Pengguna", value: totalUsers ?? 0, icon: Users, color: "#7c3aed", bg: "#ede9fe" },
     { label: "Total Reservasi", value: totalReservasi ?? 0, icon: CalendarDays, color: "#d97706", bg: "#fef3c7" },
+    { label: "Menunggu Konfirmasi", value: menunggu ?? 0, icon: Users, color: "#92400e", bg: "#fef3c7" },
     { label: "Reservasi Selesai", value: selesai ?? 0, icon: CheckCircle, color: "#16a34a", bg: "#dcfce7" },
     { label: "Dibatalkan", value: dibatalkan ?? 0, icon: X, color: "#dc2626", bg: "#fee2e2" },
   ];
@@ -47,9 +52,12 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="p-8">
-      <div className="mb-6">
-        <h1 className="font-bold text-3xl mb-1" style={{ color: "#1e0d3a" }}>Dashboard & Laporan</h1>
-        <p className="text-sm" style={{ color: "#9c8ab0" }}>Ringkasan data sistem reservasi PTIK YUMFOOD</p>
+      <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="font-bold text-3xl mb-1" style={{ color: "#1e0d3a" }}>Dashboard & Laporan</h1>
+          <p className="text-sm" style={{ color: "#9c8ab0" }}>Ringkasan data sistem reservasi harian</p>
+        </div>
+        <DashboardDateFilter currentDate={dateStr} />
       </div>
 
       {/* Stats */}

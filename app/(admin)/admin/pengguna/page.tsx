@@ -45,9 +45,22 @@ export default function AdminPenggunaPage() {
 
   return (
     <div className="p-8">
-      <div className="mb-6">
-        <h1 className="font-bold text-3xl mb-1" style={{ color: "#1e0d3a" }}>Kelola Pengguna</h1>
-        <p className="text-sm" style={{ color: "#9c8ab0" }}>Lihat dan ubah role semua pengguna sistem</p>
+      <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h1 className="font-bold text-3xl mb-1" style={{ color: "#1e0d3a" }}>Kelola Pengguna</h1>
+          <p className="text-sm" style={{ color: "#9c8ab0" }}>Lihat dan ubah role semua pengguna sistem</p>
+        </div>
+        {!loading && (
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex items-center gap-4 shrink-0">
+            <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-purple-100">
+              <Users className="w-6 h-6 text-purple-600" />
+            </div>
+            <div>
+              <p className="text-gray-500 text-xs font-semibold uppercase tracking-wider">Total Pengguna</p>
+              <p className="text-2xl font-extrabold text-purple-900">{users.length}</p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Search */}
